@@ -3,10 +3,17 @@ package main
 import (
 	// "fmt"
 	"errors"
+	"flag"
 	"html/template"
 	"io/ioutil"
+	"log"
+	"net"
 	"net/http"
 	"regexp"
+)
+
+var (
+	addr = flag.Bool("addr", false, "find open address and print to final-port.txt")
 )
 
 var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
@@ -47,56 +54,38 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
-func viewHandler(w http.ResponseWriter, r *http.Request) {
-	// title := r.URL.Path[len("/view/"):]
-	title, err := getTitle(w, r)
-	if err != nil {
-		return
+func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		m := validPath.FindStringSubmatch(r.URL.Path)
+		if m == nil {
+			http.NotFound(w, r)
+			return
+		}
+		fn(w, r, m[2])
 	}
+}
+
+func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 		return
 	}
 	renderTemplate(w, "view", p)
-
-	/*
-		fmt.Println("the URL.Path is: " + r.URL.Path)
-		title := r.URL.Path[len("/view/"):]
-		p, _ := loadPage(title)
-		fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
-	*/
 }
 
-func editHandler(w http.ResponseWriter, r *http.Request) {
-	title, err := getTitle(w, r)
-	if err != nil {
-		return
-	}
+func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
 		p = &Page{Title: title}
 	}
-
 	renderTemplate(w, "edit", p)
-	/*
-		fmt.Fprintf(w, "<h1>Editing %s</h1>"+
-			"<form action=\"/save/%s\" method=\"POST\">"+
-			"<textarea name=\"body\">%s</textarea><br>"+
-			"<input type=\"submit\" value=\"Save\">"+
-			"</form>",
-			p.Title, p.Title, p.Body)
-	*/
 }
 
-func saveHandler(w http.ResponseWriter, r *http.Request) {
-	title, err := getTitle(w, r)
-	if err != nil {
-		return
-	}
+func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	body := r.FormValue("body")
 	p := &Page{Title: title, Body: []byte(body)}
-	err = p.save()
+	err := p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -105,15 +94,24 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	/*
-	     p1 := &Page{Title: "TestPage", Body: []byte("This is a sample Page.")}
-	   	p1.save()
-	   	p2, _ := loadPage("TestPage")
-	   	fmt.Println(string(p2.Body))
-	*/
-	http.HandleFunc("/view/", viewHandler)
-	http.HandleFunc("/edit/", editHandler)
-	http.HandleFunc("/save/", saveHandler)
+	flag.Parse()
+	http.HandleFunc("/view/", makeHandler(viewHandler))
+	http.HandleFunc("/edit/", makeHandler(editHandler))
+	http.HandleFunc("/save/", makeHandler(saveHandler))
+
+	if *addr {
+		l, err := net.Listen("tcp", "127.0.0.1:0")
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = ioutil.WriteFile("final-port.txt", []byte(l.Addr().String()), 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		s := &http.Server{}
+		s.Serve(l)
+		return
+	}
 	http.ListenAndServe(":8080", nil)
 
 }
