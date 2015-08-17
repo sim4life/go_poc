@@ -13,12 +13,10 @@ func fib(num int) (fib_num int) {
 		return 1
 	}
 
-	fib_num1, fib_num2 := 0, 1
+	fib_num1, fib_num := 0, 1
 
 	for i := 2; i <= num; i++ {
-		fib_num = fib_num1 + fib_num2
-		fib_num1 = fib_num2
-		fib_num2 = fib_num
+		fib_num1, fib_num = fib_num, fib_num1+fib_num
 	}
 
 	return
