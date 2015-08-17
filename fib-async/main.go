@@ -2,6 +2,7 @@
  * Name:   fibonacci.go
  * Date:   November 16, 2009
  * Author: Jack Slingerland (jack.slingerland@gmail.com)
+ * Modified By: Shah Ismail (sim4life@yahoo.com)
  *
  * Description:  This program is a Fibonacci number calculator.
  *   It may be invoked as follows:  "./8.out [goal]", where [goal]
@@ -57,15 +58,10 @@ func main() {
 		final := make(chan int)
 
 		//Create a new fibonacci object and set it's values.
-		var x fibonacci
-		x.a = 1
-		x.b = 1
-		x.current = 2
-		x.goal = goal
+		x := fibonacci{1, 1, 2, goal}
 
 		//Create a new Go routine with the addNumber function.  We pass it the
-		//two channels that were declared earlier.  This is similiar to "spawn"
-		//in Limbo.
+		//two channels that were declared earlier.
 		go addNumber(input, final)
 
 		//The first addNumber() Go routine will block until it gets input from
@@ -77,40 +73,34 @@ func main() {
 		number := <-final
 
 		//Print the value out and we're done!
-		fmt.Fprintf(os.Stdout, "Fibnonacci Value %d is: %d\n", x.goal, number)
+		fmt.Printf("\nFibnonacci Value %d is: %d\n", x.goal, number)
 	}
 }
 
 /*
  * The addNumber() function takes two channels as parameters.  One is a
- * channel of fibonacci, which holds information about which number to
- * calculate and when to stop, and then a channel of type int, which will
+ * channel of fibonacci, and the other, a channel of type int, which will
  * be used to send the final goal number back to the main thread.
  */
 func addNumber(input chan fibonacci, final chan int) {
-	//Block here and wait for input from the previous thread
-	//or the main thread, depending on the situation.
 	x := <-input
 
-	//Here we check to see if we have met our goal, if we
-	//have, we return the goal value back to the main thread
-	//via the final channel.  Otherwise, we calculate the
-	//next number in the sequence.
+	//Here we check to see if we have met our goal,
 	if x.current < x.goal {
 		fib := x.a + x.b
 
-		//This is fun because you can assign multiple values at once.
-		//x.a <- x.b and x.b <- fib.  :)
 		x.a, x.b = x.b, fib
-		x.current = x.current + 1
+		x.current++
 
 		//Make a new channel of type fibonacci so that we can communicate
 		//with the new Go routine that we are about to create.
 		output := make(chan fibonacci)
 
-		//Pass the new Go routine the newly created channel, as well as the
+		//Pass the newly created channel to the new Go routine , as well as the
 		//final channel that was passed in from the caller.
 		go addNumber(output, final)
+
+		fmt.Print(" ", x.b)
 
 		//Send the fibonacci object out on the channel.
 		output <- x
