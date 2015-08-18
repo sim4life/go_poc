@@ -26,7 +26,7 @@ func main() {
 
 	arg := os.Args[1]
 	if arg == "" {
-		fmt.Println("Please provide a number argument!")
+		fmt.Println("Please provide a number (<92) argument!")
 		return
 	}
 
@@ -34,11 +34,11 @@ func main() {
 	// num := 5
 	num, err := strconv.Atoi(arg)
 	if err != nil {
-		fmt.Println("Please provide a number argument!")
+		fmt.Println("Please provide a number (<92) argument!")
 		return
 	}
 
 	fib_num := fib(num)
-	fmt.Println("fib(5) is: ", fib_num)
+	fmt.Printf("fib(%d) is: %d\n", num, fib_num)
 
 }

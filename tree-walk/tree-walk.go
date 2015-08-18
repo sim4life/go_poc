@@ -7,10 +7,6 @@ import (
 	// "github.com/golang/tour"
 )
 
-/**********
-INCORRECT IMPLEMENTATION
-***********/
-
 // Walk walks the tree t sending all values
 // from the tree to the channel ch.
 func Walk(t *tree.Tree, ch chan int) {
@@ -66,6 +62,7 @@ func main() {
 
 	fmt.Println("1 and 1 same: ", Same(tree.New(1), tree.New(1)))
 	fmt.Println("1 and 2 same: ", Same(tree.New(1), tree.New(2)))
-	fmt.Println("t23 and tt23 same: ", Same(t23, tt23)) //this test fails
+	//this test fails as each tree.New() is a random generated tree of 10 nodes
+	fmt.Println("t23 and tt23 same: ", Same(t23, tt23))
 
 }
