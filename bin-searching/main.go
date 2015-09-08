@@ -15,17 +15,23 @@ func main() {
 	// here's an example for strings. Note that sorting is
 	// in-place, so it changes the given slice and doesn't
 	// return a new one.
-	strs := []string{"can", "abs", "bus", "call"}
+	strs := []string{"can", "abs", "bus", "calli"}
 	sort.Sort(sort.Reverse(sort.StringSlice(strs)))
 	fmt.Println("Strings:", strs)
 	fmt.Println("StringsAreSorted: ", sort.StringsAreSorted(strs))
-	pos := sort.SearchStrings(strs, "bus")
+	pos := sort.SearchStrings(strs, "bus") //doesn't work
 	fmt.Printf("pos of \"bus\" in descending sorting is: %d\n", pos)
+	pos = sort.SearchStrings(strs, "truck") //doesn't work
+	fmt.Printf("pos of \"truck\" in descending sorting is: %d\n", pos)
 	sort.Strings(strs)
 	fmt.Println("Strings:", strs)
 	fmt.Println("StringsAreSorted: ", sort.StringsAreSorted(strs))
 	pos = sort.SearchStrings(strs, "bus")
 	fmt.Printf("pos of \"bus\" in ascending sorting is: %d\n", pos)
+	pos = sort.SearchStrings(strs, "truck")
+	fmt.Printf("pos of \"truck\" in ascending sorting is: %d\n", pos)
+	pos = sort.SearchStrings(strs, "call")
+	fmt.Printf("pos of \"call\" in ascending sorting is: %d\n", pos)
 
 	// An example of sorting `int`s.
 	ints := []int{7, 2, 4}

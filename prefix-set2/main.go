@@ -56,7 +56,25 @@ func Solution(A []int) int {
 	}
 }
 
+func someFunc(set *IntSet) {
+	fmt.Printf("set[1] is: %v\n", set.Get(1))
+	fmt.Printf("set[2] is: %v\n", set.Get(2))
+	set.Add(2)
+	fmt.Printf("set[1] is: %v\n", set.Get(1))
+	fmt.Printf("set[2] is: %v\n", set.Get(2))
+
+}
 func main() {
-	fmt.Println("The Solution is: ", Solution([]int{1, 4, 6, 7, 4}))
-	fmt.Println("The Solution is: ", Solution([]int{2, 2, 1, 0, 1}))
+	//fmt.Println("The Solution is: ", Solution([]int{1, 4, 6, 7, 4}))
+	//fmt.Println("The Solution is: ", Solution([]int{2, 2, 1, 0, 1}))
+
+	some := NewIntSet()
+
+	some.Add(1)
+	fmt.Printf("some[1] is: %v\n", some.Get(1))
+	fmt.Printf("some[2] is: %v\n", some.Get(2))
+	someFunc(some)
+	fmt.Printf("some[1] is: %v\n", some.Get(1))
+	fmt.Printf("some[2] is: %v\n", some.Get(2))
+
 }

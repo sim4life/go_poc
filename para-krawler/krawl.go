@@ -73,7 +73,7 @@ func main() {
 
 	client := http.Client{Transport: transport}
 	/*
-		resp, err := http.Get("http://6brand.com.com")
+		resp, err := http.Get("http://6brand.com")
 		body, err := ioutil.ReadAll(resp.Body)
 	*/
 	queue := make(chan string)

@@ -12,3 +12,7 @@ func main() {
 	fmt.Println(<-c)
 	fmt.Println(<-c)
 }
+
+// 1
+// 2
+// 3
